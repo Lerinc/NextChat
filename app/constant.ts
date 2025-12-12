@@ -1,7 +1,7 @@
-export const OWNER = "ChatGPTNextWeb";
-export const REPO = "ChatGPT-Next-Web";
+export const OWNER = "Lerinc";
+export const REPO = "NextChat";
 export const REPO_URL = `https://github.com/${OWNER}/${REPO}`;
-export const PLUGINS_REPO_URL = `https://github.com/${OWNER}/NextChat-Awesome-Plugins`;
+export const PLUGINS_REPO_URL = `https://github.com/ChatGPTNextWeb/NextChat-Awesome-Plugins`;
 export const ISSUE_URL = `https://github.com/${OWNER}/${REPO}/issues`;
 export const UPDATE_URL = `${REPO_URL}#keep-updated`;
 export const RELEASE_URL = `${REPO_URL}/releases`;
@@ -385,7 +385,7 @@ You are an AI assistant with access to system tools. Your role is to help users 
    {
       "method": "write_file",
       "params": {
-        "path": "NextChat_Information.txt",
+        "path": "nextchat_information.txt",
         "content": "1"
     }
    }
@@ -427,31 +427,17 @@ export const DEEPSEEK_SUMMARIZE_MODEL = "deepseek-chat";
 export const KnowledgeCutOffDate: Record<string, string> = {
   default: "2021-09",
   "gpt-4-turbo": "2023-12",
-  "gpt-4-turbo-2024-04-09": "2023-12",
-  "gpt-4-turbo-preview": "2023-12",
   "gpt-4.1": "2024-06",
-  "gpt-4.1-2025-04-14": "2024-06",
   "gpt-4.1-mini": "2024-06",
-  "gpt-4.1-mini-2025-04-14": "2024-06",
   "gpt-4.1-nano": "2024-06",
-  "gpt-4.1-nano-2025-04-14": "2024-06",
   "gpt-4.5-preview": "2023-10",
-  "gpt-4.5-preview-2025-02-27": "2023-10",
   "gpt-4o": "2023-10",
-  "gpt-4o-2024-05-13": "2023-10",
-  "gpt-4o-2024-08-06": "2023-10",
-  "gpt-4o-2024-11-20": "2023-10",
   "chatgpt-4o-latest": "2023-10",
   "gpt-4o-mini": "2023-10",
-  "gpt-4o-mini-2024-07-18": "2023-10",
   "gpt-4-vision-preview": "2023-04",
-  "o1-mini-2024-09-12": "2023-10",
   "o1-mini": "2023-10",
-  "o1-preview-2024-09-12": "2023-10",
   "o1-preview": "2023-10",
-  "o1-2024-12-17": "2023-10",
-  o1: "2023-10",
-  "o3-mini-2025-01-31": "2023-10",
+  "o1": "2023-10",
   "o3-mini": "2023-10",
   // After improvements,
   // it's now easier to add "KnowledgeCutOffDate" instead of stupid hardcoding it, as was done previously.
@@ -493,259 +479,300 @@ export const VISION_MODEL_REGEXES = [
   /o3/,
   /o4-mini/,
   /grok-4/i,
-  /gpt-5/
+  /gpt-5/,
 ];
 
 export const EXCLUDE_VISION_MODEL_REGEXES = [/claude-3-5-haiku-20241022/];
 
+// Model lists by provider with display names
+// Structure: { apiName: "api-model-name", displayName: "Display Name" }
+
 const openaiModels = [
-  // As of July 2024, gpt-4o-mini should be used in place of gpt-3.5-turbo,
-  // as it is cheaper, more capable, multimodal, and just as fast. gpt-3.5-turbo is still available for use in the API.
-  "gpt-3.5-turbo",
-  "gpt-3.5-turbo-1106",
-  "gpt-3.5-turbo-0125",
-  "gpt-4",
-  "gpt-4-0613",
-  "gpt-4-32k",
-  "gpt-4-32k-0613",
-  "gpt-4-turbo",
-  "gpt-4-turbo-preview",
-  "gpt-4.1",
-  "gpt-4.1-2025-04-14",
-  "gpt-4.1-mini",
-  "gpt-4.1-mini-2025-04-14",
-  "gpt-4.1-nano",
-  "gpt-4.1-nano-2025-04-14",
-  "gpt-4.5-preview",
-  "gpt-4.5-preview-2025-02-27",
-  "gpt-5-chat",
-  "gpt-5-mini",
-  "gpt-5-nano",
-  "gpt-5",
-  "gpt-5-chat-2025-01-01-preview",
-  "gpt-4o",
-  "gpt-4o-2024-05-13",
-  "gpt-4o-2024-08-06",
-  "gpt-4o-2024-11-20",
-  "chatgpt-4o-latest",
-  "gpt-4o-mini",
-  "gpt-4o-mini-2024-07-18",
-  "gpt-4-vision-preview",
-  "gpt-4-turbo-2024-04-09",
-  "gpt-4-1106-preview",
-  "dall-e-3",
-  "o1-mini",
-  "o1-preview",
-  "o3-mini",
-  "o3",
-  "o4-mini",
+  { apiName: "gpt-3.5-turbo", displayName: "GPT-3.5 Turbo" },
+  { apiName: "gpt-3.5-turbo-16k", displayName: "GPT-3.5 Turbo 16K" },
+  { apiName: "gpt-3.5-turbo-instruct", displayName: "GPT-3.5 Turbo Instruct" },
+  { apiName: "gpt-4", displayName: "GPT-4" },
+  { apiName: "gpt-4-32k", displayName: "GPT-4 32K" },
+  { apiName: "dall-e-3", displayName: "DALL-E 3" },
+  { apiName: "gpt-4-turbo", displayName: "GPT-4 Turbo" },
+  { apiName: "gpt-4-turbo-preview", displayName: "GPT-4 Turbo Preview" },
+  { apiName: "gpt-4-vision-preview", displayName: "GPT-4 Vision Preview" },
+  { apiName: "gpt-4o", displayName: "GPT-4o" },
+  { apiName: "chatgpt-4o-latest", displayName: "GPT-4o" },
+  { apiName: "gpt-4o-mini", displayName: "GPT-4o mini" },
+  { apiName: "o1-mini", displayName: "o1 mini" },
+  { apiName: "o1-preview", displayName: "o1 Preview" },
+  { apiName: "o3", displayName: "o3" },
+  { apiName: "o3-mini", displayName: "o3 mini" },
+  { apiName: "o4-mini", displayName: "o4 mini" },
+  { apiName: "gpt-4.1", displayName: "GPT-4.1" },
+  { apiName: "gpt-4.1-mini", displayName: "GPT-4.1 mini" },
+  { apiName: "gpt-4.1-nano", displayName: "GPT-4.1 nano" },
+  { apiName: "gpt-4.5-preview", displayName: "GPT-4.5 Preview" },
+  { apiName: "gpt-5", displayName: "GPT-5 Thinking" },
+  { apiName: "gpt-5-chat-latest", displayName: "GPT-5" },
+  { apiName: "gpt-5-mini", displayName: "GPT-5 mini" },
+  { apiName: "gpt-5-nano", displayName: "GPT-5 nano" },
+  { apiName: "gpt-5-codex", displayName: "GPT-5 Codex" },
+  { apiName: "gpt-5.1", displayName: "GPT-5.1 Thinking" },
+  { apiName: "gpt-5.1-chat-latest", displayName: "GPT-5.1 Instant" },
+  { apiName: "gpt-5.1-codex", displayName: "GPT-5.1 Codex" },
+  { apiName: "gpt-5.1-codex-mini", displayName: "GPT-5.1 Codex mini" },
+  { apiName: "gpt-5.1-codex-max", displayName: "GPT-5.1 Codex max" },
+  { apiName: "gpt-5.2", displayName: "GPT-5.2 Thinking" },
+  { apiName: "gpt-5.2-chat-latest", displayName: "GPT-5.2 Instant" },
 ];
 
 const googleModels = [
-  "gemini-1.5-pro-latest",
-  "gemini-1.5-pro",
-  "gemini-1.5-pro-002",
-  "gemini-1.5-flash-latest",
-  "gemini-1.5-flash-8b-latest",
-  "gemini-1.5-flash",
-  "gemini-1.5-flash-8b",
-  "gemini-1.5-flash-002",
-  "learnlm-1.5-pro-experimental",
-  "gemini-exp-1206",
-  "gemini-2.0-flash",
-  "gemini-2.0-flash-exp",
-  "gemini-2.0-flash-lite-preview-02-05",
-  "gemini-2.0-flash-thinking-exp",
-  "gemini-2.0-flash-thinking-exp-1219",
-  "gemini-2.0-flash-thinking-exp-01-21",
-  "gemini-2.0-pro-exp",
-  "gemini-2.0-pro-exp-02-05",
-  "gemini-2.5-pro-preview-06-05",
-  "gemini-2.5-pro"
+  { apiName: "gemini-1.5-pro-latest", displayName: "Gemini 1.5 Pro" },
+  { apiName: "gemini-1.5-pro", displayName: "Gemini 1.5 Pro" },
+  { apiName: "gemini-1.5-flash-latest", displayName: "Gemini 1.5 Flash" },
+  { apiName: "gemini-1.5-flash-8b-latest", displayName: "Gemini 1.5 Flash" },
+  { apiName: "gemini-1.5-flash", displayName: "Gemini 1.5 Flash" },
+  { apiName: "gemini-1.5-flash-8b", displayName: "Gemini 1.5 Flash" },
+  { apiName: "learnlm-1.5-pro-experimental", displayName: "LearnLM 1.5 Pro Experimental" },
+  { apiName: "gemini-exp-1206", displayName: "Gemini Exp 1206" },
+  { apiName: "gemini-2.0-flash", displayName: "Gemini 2.0 Flash" },
+  { apiName: "gemini-2.0-flash-exp", displayName: "Gemini 2.0 Flash Exp" },
+  { apiName: "gemini-2.0-flash-lite-preview-02-05", displayName: "Gemini 2.0 Flash Lite Preview" },
+  { apiName: "gemini-2.0-flash-thinking-exp", displayName: "Gemini 2.0 Flash Thinking Exp" },
+  { apiName: "gemini-2.0-pro-exp", displayName: "Gemini 2.0 Pro Exp" },
+  { apiName: "gemini-2.5-pro", displayName: "Gemini 2.5 Pro" },
+  { apiName: "gemini-3-pro-preview", displayName: "Gemini 3 Pro" },
 ];
 
 const anthropicModels = [
-  "claude-instant-1.2",
-  "claude-2.0",
-  "claude-2.1",
-  "claude-3-sonnet-20240229",
-  "claude-3-opus-20240229",
-  "claude-3-opus-latest",
-  "claude-3-haiku-20240307",
-  "claude-3-5-haiku-20241022",
-  "claude-3-5-haiku-latest",
-  "claude-3-5-sonnet-20240620",
-  "claude-3-5-sonnet-20241022",
-  "claude-3-5-sonnet-latest",
-  "claude-3-7-sonnet-20250219",
-  "claude-3-7-sonnet-latest",
-  "claude-sonnet-4-20250514",
-  "claude-opus-4-20250514",
+  { apiName: "claude-instant-1.2", displayName: "Claude Instant 1.2" },
+  { apiName: "claude-2.0", displayName: "Claude 2.0" },
+  { apiName: "claude-2.1", displayName: "Claude 2.1" },
+  { apiName: "claude-3-opus-latest", displayName: "Claude 3 Opus" },
+  { apiName: "claude-3-5-haiku-latest", displayName: "Claude 3.5 Haiku" },
+  { apiName: "claude-3-5-sonnet-latest", displayName: "Claude 3.5 Sonnet" },
+  { apiName: "claude-3-7-sonnet-latest", displayName: "Claude 3.7 Sonnet" },
+  { apiName: "claude-sonnet-4-20250514", displayName: "Claude Sonnet 4" },
+  { apiName: "claude-opus-4-20250514", displayName: "Claude Opus 4" },
+  { apiName: "claude-opus-4-1-20250805", displayName: "Claude Opus 4.1" },
+  { apiName: "claude-sonnet-4-5-20250929", displayName: "Claude Sonnet 4.5" },
+  { apiName: "claude-haiku-4-5-20251001", displayName: "Claude 4.5 Haiku" },
 ];
 
 const baiduModels = [
-  "ernie-4.0-turbo-8k",
-  "ernie-4.0-8k",
-  "ernie-4.0-8k-preview",
-  "ernie-4.0-8k-preview-0518",
-  "ernie-4.0-8k-latest",
-  "ernie-3.5-8k",
-  "ernie-3.5-8k-0205",
-  "ernie-speed-128k",
-  "ernie-speed-8k",
-  "ernie-lite-8k",
-  "ernie-tiny-8k",
+  { apiName: "ernie-4.0-turbo-8k", displayName: "ERNIE 4.0 Turbo" },
+  { apiName: "ernie-4.0-8k", displayName: "ERNIE 4.0 8K" },
+  { apiName: "ernie-4.0-8k-preview", displayName: "ERNIE 4.0 Preview" },
+  { apiName: "ernie-4.0-8k-latest", displayName: "ERNIE 4.0 Latest" },
+  { apiName: "ernie-3.5-8k", displayName: "ERNIE 3.5 8K" },
+  { apiName: "ernie-speed-128k", displayName: "ERNIE Speed 128K" },
+  { apiName: "ernie-speed-8k", displayName: "ERNIE Speed 8K" },
+  { apiName: "ernie-lite-8k", displayName: "ERNIE Lite 8K" },
+  { apiName: "ernie-tiny-8k", displayName: "ERNIE Tiny 8K" },
 ];
 
 const bytedanceModels = [
-  "Doubao-lite-4k",
-  "Doubao-lite-32k",
-  "Doubao-lite-128k",
-  "Doubao-pro-4k",
-  "Doubao-pro-32k",
-  "Doubao-pro-128k",
+  { apiName: "doubao-lite-4k", displayName: "Doubao Lite 4K" },
+  { apiName: "doubao-lite-32k", displayName: "Doubao Lite 32K" },
+  { apiName: "doubao-lite-128k", displayName: "Doubao Lite 128K" },
+  { apiName: "doubao-pro-4k", displayName: "Doubao Pro 4K" },
+  { apiName: "doubao-pro-32k", displayName: "Doubao Pro 32K" },
+  { apiName: "doubao-pro-128k", displayName: "Doubao Pro 128K" },
 ];
 
 const alibabaModes = [
-  "qwen-turbo",
-  "qwen-plus",
-  "qwen-max",
-  "qwen-max-0428",
-  "qwen-max-0403",
-  "qwen-max-0107",
-  "qwen-max-longcontext",
-  "qwen-omni-turbo",
-  "qwen-vl-plus",
-  "qwen-vl-max",
+  { apiName: "qwen-turbo", displayName: "Qwen Turbo" },
+  { apiName: "qwen-plus", displayName: "Qwen Plus" },
+  { apiName: "qwen-max", displayName: "Qwen Max" },
+  { apiName: "qwen-max-0428", displayName: "Qwen Max" },
+  { apiName: "qwen-max-0403", displayName: "Qwen Max" },
+  { apiName: "qwen-max-0107", displayName: "Qwen Max" },
+  { apiName: "qwen-max-longcontext", displayName: "Qwen Max Long Context" },
+  { apiName: "qwen-omni-turbo", displayName: "Qwen Omni Turbo" },
+  { apiName: "qwen-vl-plus", displayName: "Qwen VL Plus" },
+  { apiName: "qwen-vl-max", displayName: "Qwen VL Max" },
 ];
 
 const tencentModels = [
-  "hunyuan-pro",
-  "hunyuan-standard",
-  "hunyuan-lite",
-  "hunyuan-role",
-  "hunyuan-functioncall",
-  "hunyuan-code",
-  "hunyuan-vision",
+  { apiName: "hunyuan-pro", displayName: "Hunyuan Pro" },
+  { apiName: "hunyuan-standard", displayName: "Hunyuan Standard" },
+  { apiName: "hunyuan-lite", displayName: "Hunyuan Lite" },
+  { apiName: "hunyuan-role", displayName: "Hunyuan Role" },
+  { apiName: "hunyuan-functioncall", displayName: "Hunyuan Function Call" },
+  { apiName: "hunyuan-code", displayName: "Hunyuan Code" },
+  { apiName: "hunyuan-vision", displayName: "Hunyuan Vision" },
 ];
 
 const moonshotModels = [
-  "moonshot-v1-auto",
-  "moonshot-v1-8k",
-  "moonshot-v1-32k",
-  "moonshot-v1-128k",
-  "moonshot-v1-8k-vision-preview",
-  "moonshot-v1-32k-vision-preview",
-  "moonshot-v1-128k-vision-preview",
-  "kimi-thinking-preview",
-  "kimi-k2-0711-preview",
-  "kimi-latest",
+  { apiName: "moonshot-v1-auto", displayName: "Moonshot Auto" },
+  { apiName: "moonshot-v1-8k", displayName: "Moonshot 8K" },
+  { apiName: "moonshot-v1-32k", displayName: "Moonshot 32K" },
+  { apiName: "moonshot-v1-128k", displayName: "Moonshot 128K" },
+  { apiName: "moonshot-v1-8k-vision-preview", displayName: "Moonshot 8K Vision" },
+  { apiName: "moonshot-v1-32k-vision-preview", displayName: "Moonshot 32K Vision" },
+  { apiName: "moonshot-v1-128k-vision-preview", displayName: "Moonshot 128K Vision" },
+  { apiName: "kimi-thinking-preview", displayName: "Kimi Thinking" },
+  { apiName: "kimi-k2-0711-preview", displayName: "Kimi K2" },
+  { apiName: "kimi-latest", displayName: "Kimi Latest" },
 ];
 
 const iflytekModels = [
-  "general",
-  "generalv3",
-  "pro-128k",
-  "generalv3.5",
-  "4.0Ultra",
+  { apiName: "general", displayName: "Iflytek General" },
+  { apiName: "generalv3", displayName: "Iflytek General V3" },
+  { apiName: "pro-128k", displayName: "Iflytek Pro 128K" },
+  { apiName: "generalv3.5", displayName: "Iflytek General V3.5" },
+  { apiName: "4.0Ultra", displayName: "Iflytek 4.0 Ultra" },
 ];
 
-const deepseekModels = ["deepseek-chat", "deepseek-coder", "deepseek-reasoner"];
+const deepseekModels = [
+  { apiName: "deepseek-chat", displayName: "DeepSeek Chat" },
+  { apiName: "deepseek-coder", displayName: "DeepSeek Coder" },
+  { apiName: "deepseek-reasoner", displayName: "DeepSeek Reasoner" },
+];
 
 const xAIModes = [
-  "grok-beta",
-  "grok-2",
-  "grok-2-1212",
-  "grok-2-latest",
-  "grok-vision-beta",
-  "grok-2-vision-1212",
-  "grok-2-vision",
-  "grok-2-vision-latest",
-  "grok-3-mini-fast-beta",
-  "grok-3-mini-fast",
-  "grok-3-mini-fast-latest",
-  "grok-3-mini-beta",
-  "grok-3-mini",
-  "grok-3-mini-latest",
-  "grok-3-fast-beta",
-  "grok-3-fast",
-  "grok-3-fast-latest",
-  "grok-3-beta",
-  "grok-3",
-  "grok-3-latest",
-  "grok-4",
-  "grok-4-0709",
-  "grok-4-fast-non-reasoning",
-  "grok-4-fast-reasoning",
-  "grok-code-fast-1",
+  { apiName: "grok-beta", displayName: "Grok Beta" },
+  { apiName: "grok-2", displayName: "Grok 2" },
+  { apiName: "grok-2-1212", displayName: "Grok 2" },
+  { apiName: "grok-2-latest", displayName: "Grok 2" },
+  { apiName: "grok-vision-beta", displayName: "Grok Vision Beta" },
+  { apiName: "grok-2-vision-1212", displayName: "Grok 2 Vision" },
+  { apiName: "grok-2-vision", displayName: "Grok 2 Vision" },
+  { apiName: "grok-2-vision-latest", displayName: "Grok 2 Vision" },
+  { apiName: "grok-3-mini-fast-beta", displayName: "Grok 3 Mini Fast Beta" },
+  { apiName: "grok-3-mini-fast", displayName: "Grok 3 Mini Fast" },
+  { apiName: "grok-3-mini-fast-latest", displayName: "Grok 3 Mini Fast" },
+  { apiName: "grok-3-mini-beta", displayName: "Grok 3 Mini Beta" },
+  { apiName: "grok-3-mini", displayName: "Grok 3 Mini" },
+  { apiName: "grok-3-mini-latest", displayName: "Grok 3 Mini" },
+  { apiName: "grok-3-fast-beta", displayName: "Grok 3 Fast Beta" },
+  { apiName: "grok-3-fast", displayName: "Grok 3 Fast" },
+  { apiName: "grok-3-fast-latest", displayName: "Grok 3 Fast" },
+  { apiName: "grok-3-beta", displayName: "Grok 3 Beta" },
+  { apiName: "grok-3", displayName: "Grok 3" },
+  { apiName: "grok-3-latest", displayName: "Grok 3" },
+  { apiName: "grok-4", displayName: "Grok 4" },
+  { apiName: "grok-code-fast-1", displayName: "Grok Code Fast 1" },
+  { apiName: "grok-4-latest", displayName: "Grok 4" },
+  { apiName: "grok-4-fast-non-reasoning", displayName: "Grok 4 Fast" },
+  { apiName: "grok-4-fast-reasoning", displayName: "Grok 4 Fast Reasoning" },
+  { apiName: "grok-4-1-fast-non-reasoning", displayName: "Grok 4.1 Fast" },
+  { apiName: "grok-4-1-fast-reasoning", displayName: "Grok 4.1 Fast Reasoning" },
 ];
 
 const chatglmModels = [
-  "glm-4-plus",
-  "glm-4-0520",
-  "glm-4",
-  "glm-4-air",
-  "glm-4-airx",
-  "glm-4-long",
-  "glm-4-flashx",
-  "glm-4-flash",
-  "glm-4v-plus",
-  "glm-4v",
-  "glm-4v-flash", // free
-  "cogview-3-plus",
-  "cogview-3",
-  "cogview-3-flash", // free
-  // 目前无法适配轮询任务
-  //   "cogvideox",
-  //   "cogvideox-flash", // free
+  { apiName: "glm-4-plus", displayName: "GLM 4 Plus" },
+  { apiName: "glm-4", displayName: "GLM 4" },
+  { apiName: "glm-4-air", displayName: "GLM 4 Air" },
+  { apiName: "glm-4-airx", displayName: "GLM 4 AirX" },
+  { apiName: "glm-4-long", displayName: "GLM 4 Long" },
+  { apiName: "glm-4-flashx", displayName: "GLM 4 FlashX" },
+  { apiName: "glm-4-flash", displayName: "GLM 4 Flash" },
+  { apiName: "glm-4v-plus", displayName: "GLM 4V Plus" },
+  { apiName: "glm-4v", displayName: "GLM 4V" },
+  { apiName: "glm-4v-flash", displayName: "GLM 4V Flash" }, // free
+  { apiName: "cogview-3-plus", displayName: "CogView 3 Plus" },
+  { apiName: "cogview-3", displayName: "CogView 3" },
+  { apiName: "cogview-3-flash", displayName: "CogView 3 Flash" }, // free
 ];
 
 const siliconflowModels = [
-  "Qwen/Qwen2.5-7B-Instruct",
-  "Qwen/Qwen2.5-72B-Instruct",
-  "deepseek-ai/DeepSeek-R1",
-  "deepseek-ai/DeepSeek-R1-Distill-Llama-70B",
-  "deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
-  "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B",
-  "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
-  "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
-  "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
-  "deepseek-ai/DeepSeek-V3",
-  "meta-llama/Llama-3.3-70B-Instruct",
-  "THUDM/glm-4-9b-chat",
-  "Pro/deepseek-ai/DeepSeek-R1",
-  "Pro/deepseek-ai/DeepSeek-V3",
+  { apiName: "qwen/qwen2.5-7B-Instruct", displayName: "Qwen 2.5 7B" },
+  { apiName: "qwen/qwen2.5-72B-Instruct", displayName: "Qwen 2.5 72B" },
+  { apiName: "deepseek-ai/DeepSeek-R1", displayName: "DeepSeek R1" },
+  { apiName: "deepseek-ai/DeepSeek-R1-Distill-Llama-70B", displayName: "DeepSeek R1 Llama 70B" },
+  { apiName: "deepseek-ai/DeepSeek-R1-Distill-Llama-8B", displayName: "DeepSeek R1 Llama 8B" },
+  { apiName: "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B", displayName: "DeepSeek R1 Qwen 1.5B" },
+  { apiName: "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B", displayName: "DeepSeek R1 Qwen 14B" },
+  { apiName: "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B", displayName: "DeepSeek R1 Qwen 32B" },
+  { apiName: "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B", displayName: "DeepSeek R1 Qwen 7B" },
+  { apiName: "deepseek-ai/DeepSeek-V3", displayName: "DeepSeek V3" },
+  { apiName: "meta-llama/Llama-3.3-70B-Instruct", displayName: "Llama 3.3 70B" },
+  { apiName: "THUDM/glm-4-9b-chat", displayName: "GLM 4 9B" },
+  { apiName: "Pro/deepseek-ai/DeepSeek-R1", displayName: "DeepSeek R1 Pro" },
+  { apiName: "Pro/deepseek-ai/DeepSeek-V3", displayName: "DeepSeek V3 Pro" },
 ];
 
 const ai302Models = [
-  "deepseek-chat",
-  "gpt-4o",
-  "chatgpt-4o-latest",
-  "llama3.3-70b",
-  "deepseek-reasoner",
-  "gemini-2.0-flash",
-  "claude-3-7-sonnet-20250219",
-  "claude-3-7-sonnet-latest",
-  "grok-3-beta",
-  "grok-3-mini-beta",
-  "gpt-4.1",
-  "gpt-4.1-mini",
-  "o3",
-  "o4-mini",
-  "qwen3-235b-a22b",
-  "qwen3-32b",
-  "gemini-2.5-pro-preview-05-06",
-  "llama-4-maverick",
-  "gemini-2.5-flash",
-  "claude-sonnet-4-20250514",
-  "claude-opus-4-20250514",
-  "gemini-2.5-pro",
+  { apiName: "deepseek-chat", displayName: "DeepSeek Chat" },
+  { apiName: "gpt-4o", displayName: "GPT-4o" },
+  { apiName: "chatgpt-4o-latest", displayName: "GPT-4o" },
+  { apiName: "llama3.3-70b", displayName: "Llama 3.3 70B" },
+  { apiName: "deepseek-reasoner", displayName: "DeepSeek Reasoner" },
+  { apiName: "gemini-2.0-flash", displayName: "Gemini 2.0 Flash" },
+  { apiName: "claude-3-7-sonnet-20250219", displayName: "Claude 3.7 Sonnet" },
+  { apiName: "claude-3-7-sonnet-latest", displayName: "Claude 3.7 Sonnet" },
+  { apiName: "grok-3-beta", displayName: "Grok 3 Beta" },
+  { apiName: "grok-3-mini-beta", displayName: "Grok 3 mini Beta" },
+  { apiName: "gpt-4.1", displayName: "GPT-4.1" },
+  { apiName: "gpt-4.1-mini", displayName: "GPT-4.1 mini" },
+  { apiName: "o3", displayName: "" },
+  { apiName: "o4-mini", displayName: "o4 mini" },
+  { apiName: "qwen3-235b-a22b", displayName: "Qwen 3 235B" },
+  { apiName: "qwen3-32b", displayName: "Qwen 3 32B" },
+  { apiName: "gemini-2.5-pro-preview-05-06", displayName: "Gemini 2.5 Pro Preview" },
+  { apiName: "llama-4-maverick", displayName: "Llama 4 Maverick" },
+  { apiName: "gemini-2.5-flash", displayName: "Gemini 2.5 Flash" },
+  { apiName: "claude-sonnet-4-20250514", displayName: "Claude Sonnet 4" },
+  { apiName: "claude-opus-4-20250514", displayName: "Claude Opus 4" },
+  { apiName: "gemini-2.5-pro", displayName: "Gemini 2.5 Pro" },
 ];
+
+/**
+ * Generate MODEL_DISPLAY_NAMES from all model arrays
+ */
+const generateModelDisplayNames = (): Record<string, string> => {
+  const names: Record<string, string> = {};
+  const allModels = [
+    openaiModels,
+    googleModels,
+    anthropicModels,
+    baiduModels,
+    bytedanceModels,
+    alibabaModes,
+    tencentModels,
+    moonshotModels,
+    iflytekModels,
+    deepseekModels,
+    xAIModes,
+    chatglmModels,
+    siliconflowModels,
+    ai302Models,
+  ];
+  
+  allModels.forEach(modelArray => {
+    modelArray.forEach(model => {
+      const key = (model as any).apiName;
+      names[key] = model.displayName;
+    });
+  });
+  
+  return names;
+};
+
+/**
+ * Model Display Names Mapping - automatically generated from model arrays
+ */
+export const MODEL_DISPLAY_NAMES: Record<string, string> = generateModelDisplayNames();
+
+/**
+ * Get display name for a model
+ * @param modelName The model name/id
+ * @returns The display name, or the model name if not found
+ */
+export const getModelDisplayName = (modelName?: string): string => {
+  if (!modelName) return "";
+  const display = MODEL_DISPLAY_NAMES[modelName];
+  // If a mapping exists and is a non-empty string, return it.
+  // Otherwise fall back to the raw model name.
+  if (typeof display === "string" && display.trim().length > 0) {
+    return display;
+  }
+  return modelName;
+};
 
 let seq = 1000; // 内置的模型序号生成器从1000开始
 export const DEFAULT_MODELS = [
-  ...openaiModels.map((name) => ({
-    name,
+  ...openaiModels.map((model) => ({
+    apiName: (model as any).apiName,
+    displayName: (model as any).displayName ?? (model as any).apiName,
     available: true,
     sorted: seq++, // Global sequence sort(index)
     provider: {
@@ -755,8 +782,9 @@ export const DEFAULT_MODELS = [
       sorted: 1, // 这里是固定的，确保顺序与之前内置的版本一致
     },
   })),
-  ...openaiModels.map((name) => ({
-    name,
+  ...openaiModels.map((model) => ({
+    apiName: (model as any).apiName,
+    displayName: (model as any).displayName ?? (model as any).apiName,
     available: true,
     sorted: seq++,
     provider: {
@@ -766,8 +794,9 @@ export const DEFAULT_MODELS = [
       sorted: 2,
     },
   })),
-  ...googleModels.map((name) => ({
-    name,
+  ...googleModels.map((model) => ({
+    apiName: (model as any).apiName,
+    displayName: (model as any).displayName ?? (model as any).apiName,
     available: true,
     sorted: seq++,
     provider: {
@@ -777,8 +806,9 @@ export const DEFAULT_MODELS = [
       sorted: 3,
     },
   })),
-  ...anthropicModels.map((name) => ({
-    name,
+  ...anthropicModels.map((model) => ({
+    apiName: (model as any).apiName,
+    displayName: (model as any).displayName ?? (model as any).apiName,
     available: true,
     sorted: seq++,
     provider: {
@@ -788,8 +818,9 @@ export const DEFAULT_MODELS = [
       sorted: 4,
     },
   })),
-  ...baiduModels.map((name) => ({
-    name,
+  ...baiduModels.map((model) => ({
+    apiName: (model as any).apiName,
+    displayName: (model as any).displayName ?? (model as any).apiName,
     available: true,
     sorted: seq++,
     provider: {
@@ -799,8 +830,9 @@ export const DEFAULT_MODELS = [
       sorted: 5,
     },
   })),
-  ...bytedanceModels.map((name) => ({
-    name,
+  ...bytedanceModels.map((model) => ({
+    apiName: (model as any).apiName,
+    displayName: (model as any).displayName ?? (model as any).apiName,
     available: true,
     sorted: seq++,
     provider: {
@@ -810,8 +842,9 @@ export const DEFAULT_MODELS = [
       sorted: 6,
     },
   })),
-  ...alibabaModes.map((name) => ({
-    name,
+  ...alibabaModes.map((model) => ({
+    apiName: (model as any).apiName,
+    displayName: (model as any).displayName ?? (model as any).apiName,
     available: true,
     sorted: seq++,
     provider: {
@@ -821,8 +854,9 @@ export const DEFAULT_MODELS = [
       sorted: 7,
     },
   })),
-  ...tencentModels.map((name) => ({
-    name,
+  ...tencentModels.map((model) => ({
+    apiName: (model as any).apiName,
+    displayName: (model as any).displayName ?? (model as any).apiName,
     available: true,
     sorted: seq++,
     provider: {
@@ -832,8 +866,9 @@ export const DEFAULT_MODELS = [
       sorted: 8,
     },
   })),
-  ...moonshotModels.map((name) => ({
-    name,
+  ...moonshotModels.map((model) => ({
+    apiName: (model as any).apiName,
+    displayName: (model as any).displayName ?? (model as any).apiName,
     available: true,
     sorted: seq++,
     provider: {
@@ -843,8 +878,9 @@ export const DEFAULT_MODELS = [
       sorted: 9,
     },
   })),
-  ...iflytekModels.map((name) => ({
-    name,
+  ...iflytekModels.map((model) => ({
+    apiName: (model as any).apiName,
+    displayName: (model as any).displayName ?? (model as any).apiName,
     available: true,
     sorted: seq++,
     provider: {
@@ -854,8 +890,9 @@ export const DEFAULT_MODELS = [
       sorted: 10,
     },
   })),
-  ...xAIModes.map((name) => ({
-    name,
+  ...xAIModes.map((model) => ({
+    apiName: (model as any).apiName,
+    displayName: (model as any).displayName ?? (model as any).apiName,
     available: true,
     sorted: seq++,
     provider: {
@@ -865,8 +902,9 @@ export const DEFAULT_MODELS = [
       sorted: 11,
     },
   })),
-  ...chatglmModels.map((name) => ({
-    name,
+  ...chatglmModels.map((model) => ({
+    apiName: (model as any).apiName,
+    displayName: (model as any).displayName ?? (model as any).apiName,
     available: true,
     sorted: seq++,
     provider: {
@@ -876,8 +914,9 @@ export const DEFAULT_MODELS = [
       sorted: 12,
     },
   })),
-  ...deepseekModels.map((name) => ({
-    name,
+  ...deepseekModels.map((model) => ({
+    apiName: (model as any).apiName,
+    displayName: (model as any).displayName ?? (model as any).apiName,
     available: true,
     sorted: seq++,
     provider: {
@@ -887,8 +926,9 @@ export const DEFAULT_MODELS = [
       sorted: 13,
     },
   })),
-  ...siliconflowModels.map((name) => ({
-    name,
+  ...siliconflowModels.map((model) => ({
+    apiName: (model as any).apiName,
+    displayName: (model as any).displayName ?? (model as any).apiName,
     available: true,
     sorted: seq++,
     provider: {
@@ -898,8 +938,9 @@ export const DEFAULT_MODELS = [
       sorted: 14,
     },
   })),
-  ...ai302Models.map((name) => ({
-    name,
+  ...ai302Models.map((model) => ({
+    apiName: (model as any).apiName,
+    displayName: (model as any).displayName ?? (model as any).apiName,
     available: true,
     sorted: seq++,
     provider: {

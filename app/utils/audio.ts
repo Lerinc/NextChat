@@ -9,8 +9,10 @@ export function createTTSPlayer(): TTSPlayer {
   let audioBufferSourceNode: AudioBufferSourceNode | null = null;
 
   const init = () => {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    audioContext.suspend();
+    const AudioCtor: any = (window as any).AudioContext ?? (window as any).webkitAudioContext;
+    if (!AudioCtor) return;
+    audioContext = new AudioCtor();
+    if (audioContext) audioContext.suspend();
   };
 
   const play = async (audioBuffer: ArrayBuffer, onended: () => void | null) => {

@@ -56,7 +56,7 @@ export function collectModelTable(
     string,
     {
       available: boolean;
-      name: string;
+      apiName: string;
       displayName: string;
       sorted: number;
       provider?: LLMModel["provider"]; // Marked as optional
@@ -66,16 +66,26 @@ export function collectModelTable(
 
   // default models
   models.forEach((m) => {
-    // using <modelName>@<providerId> as fullName
-    modelTable[`${m.name}@${m?.provider?.id}`] = {
-      ...m,
-      displayName: m.name, // 'provider' is copied over if it exists
+    // using <apiName>@<providerId> as fullName
+    const apiName = (m as LLMModel).apiName;
+    modelTable[`${apiName}@${m?.provider?.id}`] = {
+      available: m.available,
+      apiName,
+      displayName: m.displayName ?? apiName,
+      sorted: m.sorted,
+      provider: m.provider,
+      isDefault: (m as any).isDefault,
     };
   });
 
   // server custom models
+  // Ensure models specified in CUSTOM_MODELS appear in the same order as listed
+  // in the env value by assigning them low 'sorted' values in that sequence.
+  let customOrderIndex = -100000;
+
   customModels
     .split(",")
+    .map((v) => v.trim()) // trim whitespace around each entry so users can write ", "
     .filter((v) => !!v && v.length > 0)
     .forEach((m) => {
       const available = !m.startsWith("-");
@@ -91,24 +101,28 @@ export function collectModelTable(
       } else {
         // 1. find model by name, and set available value
         const [customModelName, customProviderName] = getModelProvider(name);
+        const customProviderLower = customProviderName?.toLowerCase();
         let count = 0;
         for (const fullName in modelTable) {
           const [modelName, providerName] = getModelProvider(fullName);
           if (
             customModelName == modelName &&
             (customProviderName === undefined ||
-              customProviderName === providerName)
+              customProviderLower === providerName)
           ) {
             count += 1;
             modelTable[fullName]["available"] = available;
+            // preserve user-specified order by assigning sorted according to
+            // the sequence in CUSTOM_MODELS
+            modelTable[fullName]["sorted"] = customOrderIndex++;
             // swap name and displayName for bytedance
-            if (providerName === "bytedance") {
-              [name, displayName] = [displayName, modelName];
-              modelTable[fullName]["name"] = name;
-            }
-            if (displayName) {
-              modelTable[fullName]["displayName"] = displayName;
-            }
+              if (providerName === "bytedance") {
+                [name, displayName] = [displayName, modelName];
+                modelTable[fullName]["apiName"] = name;
+              }
+              if (displayName) {
+                modelTable[fullName]["displayName"] = displayName;
+              }
           }
         }
         // 2. if model not exists, create new model with available value
@@ -122,11 +136,11 @@ export function collectModelTable(
             [customModelName, displayName] = [displayName, customModelName];
           }
           modelTable[`${customModelName}@${provider?.id}`] = {
-            name: customModelName,
+            apiName: customModelName,
             displayName: displayName || customModelName,
             available,
-            provider, // Use optional chaining
-            sorted: CustomSeq.next(`${customModelName}@${provider?.id}`),
+            provider,
+            sorted: customOrderIndex++,
           };
         }
       }
@@ -246,9 +260,9 @@ export function isModelNotavailableInServer(
     ? providerNames
     : [providerNames];
   for (const providerName of providerNamesArray) {
-    // if model provider is bytedance, use model config name to check if not avaliable
+    // if model provider is bytedance, use model config apiName to check if not avaliable
     if (providerName === ServiceProvider.ByteDance) {
-      return !Object.values(modelTable).filter((v) => v.name === modelName)?.[0]
+      return !Object.values(modelTable).filter((v) => v.apiName === modelName)?.[0]
         ?.available;
     }
     const fullName = `${modelName}@${providerName.toLowerCase()}`;

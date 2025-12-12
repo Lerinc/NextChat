@@ -91,7 +91,9 @@ export interface LLMUsage {
 }
 
 export interface LLMModel {
-  name: string;
+  // canonical API model identifier (e.g. "gpt-4o-mini")
+  apiName: string;
+  // human friendly display name (e.g. "GPT-4o mini")
   displayName?: string;
   available: boolean;
   provider: LLMModelProvider;

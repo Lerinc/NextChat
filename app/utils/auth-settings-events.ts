@@ -1,19 +1,16 @@
-import { sendGAEvent } from "@next/third-parties/google";
-
+// Analytics removed: replace tracking calls with no-op functions
 export function trackConversationGuideToCPaymentClick() {
-  sendGAEvent("event", "ConversationGuideToCPaymentClick", { value: 1 });
+  /* no-op for privacy */
 }
 
 export function trackAuthorizationPageButtonToCPaymentClick() {
-  sendGAEvent("event", "AuthorizationPageButtonToCPaymentClick", { value: 1 });
+  /* no-op for privacy */
 }
 
 export function trackAuthorizationPageBannerToCPaymentClick() {
-  sendGAEvent("event", "AuthorizationPageBannerToCPaymentClick", {
-    value: 1,
-  });
+  /* no-op for privacy */
 }
 
 export function trackSettingsPageGuideToCPaymentClick() {
-  sendGAEvent("event", "SettingsPageGuideToCPaymentClick", { value: 1 });
+  /* no-op for privacy */
 }

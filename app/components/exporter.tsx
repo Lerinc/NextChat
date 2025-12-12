@@ -34,12 +34,22 @@ import NextImage from "next/image";
 import { toBlob, toPng } from "html-to-image";
 
 import { prettyObject } from "../utils/format";
-import { EXPORT_MESSAGE_CLASS_NAME } from "../constant";
+import { EXPORT_MESSAGE_CLASS_NAME, getModelDisplayName } from "../constant";
 import { getClientConfig } from "../config/client";
 import { type ClientApi, getClientApi } from "../client/api";
 import { getMessageTextContent } from "../utils";
 import { MaskAvatar } from "./mask";
 import clsx from "clsx";
+
+function formatDate(d: any) {
+  if (d === undefined || d === null || String(d).trim() === "") return "";
+  if (typeof d === "string") return d;
+  try {
+    return new Date(d).toLocaleString();
+  } catch {
+    return String(d);
+  }
+}
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -278,7 +288,7 @@ export function RenderExport(props: {
         id: i.toString(),
         role: role as any,
         content: role === "user" ? v.textContent ?? "" : v.innerHTML,
-        date: "",
+        date: props.messages[i]?.date ?? "",
       };
     });
 
@@ -417,6 +427,93 @@ export function ImagePreviewer(props: {
 
   const previewRef = useRef<HTMLDivElement>(null);
 
+  const modelsUsed = (() => {
+    try {
+      const inferModelAt = (index: number) => {
+        const m = props.messages[index] as any;
+        if (m && m.model) return m.model;
+        // for user messages, try to find following assistant message's model
+        for (let j = index + 1; j < props.messages.length; j++) {
+          const mm = props.messages[j] as any;
+          if (mm && mm.model) return mm.model;
+        }
+        return undefined;
+      };
+
+      const list = props.messages
+        .map((_, i) => inferModelAt(i))
+        .filter((v) => v !== undefined && v !== null && String(v).trim() !== "");
+      return Array.from(new Set(list));
+    } catch {
+      return [];
+    }
+  })();
+
+  const modelDisplay =
+    modelsUsed.length === 0
+      ? getModelDisplayName(session.mask.modelConfig.model)
+      : modelsUsed.length === 1
+      ? getModelDisplayName(modelsUsed[0])
+      : modelsUsed.map((m) => getModelDisplayName(m)).join(", ");
+
+  // helper to infer model for a given message index (used for preview and exports)
+  const inferModelForIndex = (index: number) => {
+    const mm = (props.messages[index] as any) || {};
+    if (mm.model) return mm.model;
+    for (let j = index + 1; j < props.messages.length; j++) {
+      const next = (props.messages[j] as any) || {};
+      if (next.model) return next.model;
+    }
+    return undefined;
+  };
+
+  // Determine time range from the first and last message that include a `date` value.
+  const timeRange = (() => {
+    if (!props.messages || props.messages.length === 0) return "";
+
+    let startStr: string | null = null;
+    let endStr: string | null = null;
+
+    for (let i = 0; i < props.messages.length; i++) {
+      const v = (props.messages[i] as any).date;
+      if (v !== undefined && v !== null && String(v).trim() !== "") {
+        // if it's already a string (toLocaleString from createMessage), use it
+        if (typeof v === "string") {
+          startStr = v;
+        } else {
+          try {
+            startStr = new Date(v).toLocaleString();
+          } catch {
+            startStr = String(v);
+          }
+        }
+        break;
+      }
+    }
+
+    for (let i = props.messages.length - 1; i >= 0; i--) {
+      const v = (props.messages[i] as any).date;
+      if (v !== undefined && v !== null && String(v).trim() !== "") {
+        if (typeof v === "string") {
+          endStr = v;
+        } else {
+          try {
+            endStr = new Date(v).toLocaleString();
+          } catch {
+            endStr = String(v);
+          }
+        }
+        break;
+      }
+    }
+
+    if (!startStr && !endStr) return "";
+    if (startStr && !endStr) return startStr;
+    if (!startStr && endStr) return endStr;
+    if (startStr === endStr) return startStr;
+    return `${startStr} – ${endStr}`;
+  })();
+
   const copy = () => {
     showToast(Locale.Export.Image.Toast);
     const dom = previewRef.current;
@@ -518,15 +615,15 @@ export function ImagePreviewer(props: {
             <NextImage
               src={ChatGptIcon.src}
               alt="logo"
-              width={50}
-              height={50}
+              width={55.15}
+              height={37}
             />
           </div>
 
           <div>
             <div className={styles["main-title"]}>NextChat</div>
             <div className={styles["sub-title"]}>
-              github.com/ChatGPTNextWeb/ChatGPT-Next-Web
+              github.com/Lerinc/NextChat
             </div>
             <div className={styles["icons"]}>
               <MaskAvatar avatar={config.avatar} />
@@ -539,7 +636,7 @@ export function ImagePreviewer(props: {
           </div>
           <div>
             <div className={styles["chat-info-item"]}>
-              {Locale.Exporter.Model}: {mask.modelConfig.model}
+              {Locale.Exporter.Model}: {modelDisplay}
             </div>
             <div className={styles["chat-info-item"]}>
               {Locale.Exporter.Messages}: {props.messages.length}
@@ -548,66 +645,90 @@ export function ImagePreviewer(props: {
               {Locale.Exporter.Topic}: {session.topic}
             </div>
             <div className={styles["chat-info-item"]}>
-              {Locale.Exporter.Time}:{" "}
-              {new Date(
-                props.messages.at(-1)?.date ?? Date.now(),
-              ).toLocaleString()}
+              {Locale.Exporter.Time}: {timeRange || new Date().toLocaleString()}
             </div>
           </div>
         </div>
         {props.messages.map((m, i) => {
           return (
-            <div
-              className={clsx(styles["message"], styles["message-" + m.role])}
-              key={i}
-            >
-              <div className={styles["avatar"]}>
-                {m.role === "user" ? (
-                  <Avatar avatar={config.avatar}></Avatar>
-                ) : (
-                  <MaskAvatar
-                    avatar={session.mask.avatar}
-                    model={m.model || session.mask.modelConfig.model}
+            <div className={styles["message-container"]} key={`msg-${i}-${(m as any).date ?? ''}`}>
+              <div
+                className={clsx(styles["message"], styles["message-" + m.role])}
+                key={i}
+              >
+                <div className={styles["avatar"]}>
+                  {m.role === "user" ? (
+                    <Avatar avatar={config.avatar}></Avatar>
+                  ) : (
+                    <MaskAvatar
+                      avatar={session.mask.avatar}
+                      model={m.model || session.mask.modelConfig.model}
+                    />
+                  )}
+                </div>
+
+                <div className={styles["body"]}>
+                  <Markdown
+                    content={getMessageTextContent(m)}
+                    fontSize={config.fontSize}
+                    fontFamily={config.fontFamily}
+                    defaultShow
                   />
-                )}
+                  {getMessageImages(m).length == 1 && (
+                    <img
+                      key={`msg-img-${i}`}
+                      src={getMessageImages(m)[0]}
+                      alt="message"
+                      className={styles["message-image"]}
+                    />
+                  )}
+                  {getMessageImages(m).length > 1 && (
+                    <div
+                      className={styles["message-images"]}
+                      style={
+                        {
+                          "--image-count": getMessageImages(m).length,
+                        } as React.CSSProperties
+                      }
+                    >
+                      {getMessageImages(m).map((src, j) => (
+                        <img
+                          key={`msg-img-${i}-${j}`}
+                          src={src}
+                          alt="message"
+                          className={styles["message-image-multi"]}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className={styles["body"]}>
-                <Markdown
-                  content={getMessageTextContent(m)}
-                  fontSize={config.fontSize}
-                  fontFamily={config.fontFamily}
-                  defaultShow
-                />
-                {getMessageImages(m).length == 1 && (
-                  <img
-                    key={i}
-                    src={getMessageImages(m)[0]}
-                    alt="message"
-                    className={styles["message-image"]}
-                  />
-                )}
-                {getMessageImages(m).length > 1 && (
-                  <div
-                    className={styles["message-images"]}
-                    style={
-                      {
-                        "--image-count": getMessageImages(m).length,
-                      } as React.CSSProperties
+              {
+                (() => {
+                  const inferModel = (index: number) => {
+                    const mm = (props.messages[index] as any) || {};
+                    if (mm.model) return mm.model;
+                    for (let j = index + 1; j < props.messages.length; j++) {
+                      const next = (props.messages[j] as any) || {};
+                      if (next.model) return next.model;
                     }
-                  >
-                    {getMessageImages(m).map((src, i) => (
-                      <img
-                        key={i}
-                        src={src}
-                        alt="message"
-                        className={styles["message-image-multi"]}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
+                    return undefined;
+                  };
+
+                  const msgModel = inferModel(i);
+                  const dateStr = formatDate((m as any).date);
+                  const modelStr = msgModel ? getModelDisplayName(msgModel) : "";
+                  const combined = modelStr && dateStr ? `${modelStr} | ${dateStr}` : modelStr || dateStr;
+                  return (
+                    <div className={clsx(styles["message-footer"], styles["message-footer-" + m.role])}>
+                      {combined}
+                    </div>
+                  );
+                })()
+              }
             </div>
+
           );
         })}
       </div>
@@ -623,11 +744,24 @@ export function MarkdownPreviewer(props: {
     `# ${props.topic}\n\n` +
     props.messages
       .map((m) => {
+        const content = getMessageTextContent(m).trim();
+        const time = formatDate((m as any).date);
+        const timeLine = time ? `\n\n_${Locale.Exporter.Time}: ${time}_` : "";
+        const inferModel = (index: number) => {
+          const mm = (props.messages[index] as any) || {};
+          if (mm.model) return mm.model;
+          for (let j = index + 1; j < props.messages.length; j++) {
+            const next = (props.messages[j] as any) || {};
+            if (next.model) return next.model;
+          }
+          return null;
+        };
+        const idx = props.messages.indexOf(m);
+        const model = inferModel(idx);
+        const modelLine = model ? `\n\n_${Locale.Exporter.Model}: ${getModelDisplayName(model)}_` : "";
         return m.role === "user"
-          ? `## ${Locale.Export.MessageFromYou}:\n${getMessageTextContent(m)}`
-          : `## ${Locale.Export.MessageFromChatGPT}:\n${getMessageTextContent(
-              m,
-            ).trim()}`;
+          ? `## ${Locale.Export.MessageFromYou}:\n${content}${timeLine}${modelLine}`
+          : `## ${Locale.Export.MessageFromChatGPT}:\n${content}${timeLine}${modelLine}`;
       })
       .join("\n\n");
 
@@ -662,10 +796,23 @@ export function JsonPreviewer(props: {
         role: "system",
         content: `${Locale.FineTuned.Sysmessage} ${props.topic}`,
       },
-      ...props.messages.map((m) => ({
-        role: m.role,
-        content: m.content,
-      })),
+      ...props.messages.map((m, idx) => {
+        const inferModel = (index: number) => {
+          const mm = (props.messages[index] as any) || {};
+          if (mm.model) return mm.model;
+          for (let j = index + 1; j < props.messages.length; j++) {
+            const next = (props.messages[j] as any) || {};
+            if (next.model) return next.model;
+          }
+          return null;
+        };
+        return {
+          role: m.role,
+          content: m.content,
+          date: (m as any).date ?? null,
+          model: inferModel(idx) ?? null,
+        };
+      }),
     ],
   };
   const mdText = "```json\n" + JSON.stringify(msgs, null, 2) + "\n```";

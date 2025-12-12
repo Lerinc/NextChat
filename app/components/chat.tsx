@@ -107,6 +107,8 @@ import {
   REQUEST_TIMEOUT_MS,
   ServiceProvider,
   UNFINISHED_INPUT,
+  getModelDisplayName,
+  MODEL_DISPLAY_NAMES,
 } from "../constant";
 import { Avatar } from "./emoji";
 import { ContextPrompts, MaskAvatar, MaskConfig } from "./mask";
@@ -546,9 +548,7 @@ export function ChatActions(props: {
   }, [allModels]);
   const currentModelName = useMemo(() => {
     const model = models.find(
-      (m) =>
-        m.name == currentModel &&
-        m?.provider?.providerName == currentProviderName,
+      (m) => m.apiName == currentModel && m?.provider?.providerName == currentProviderName,
     );
     return model?.displayName ?? "";
   }, [models, currentModel, currentProviderName]);
@@ -579,20 +579,21 @@ export function ChatActions(props: {
 
     // if current model is not available
     // switch to first available model
-    const isUnavailableModel = !models.some((m) => m.name === currentModel);
+    const isUnavailableModel = !models.some((m) => m.apiName === currentModel);
     if (isUnavailableModel && models.length > 0) {
       // show next model to default model if exist
       let nextModel = models.find((model) => model.isDefault) || models[0];
       chatStore.updateTargetSession(session, (session) => {
-        session.mask.modelConfig.model = nextModel.name;
+        session.mask.modelConfig.model = nextModel.apiName;
         session.mask.modelConfig.providerName = nextModel?.provider
           ?.providerName as ServiceProvider;
       });
-      showToast(
-        nextModel?.provider?.providerName == "ByteDance"
-          ? nextModel.displayName
-          : nextModel.name,
-      );
+      // disable toast notification windows for models
+      // showToast(
+      // nextModel?.provider?.providerName == "ByteDance"
+      //  ? nextModel.displayName
+      //  : nextModel.name,
+      // );
     }
   }, [chatStore, currentModel, models, session]);
 
@@ -682,17 +683,44 @@ export function ChatActions(props: {
         {showModelSelector && (
           <Selector
             defaultSelectedValue={`${currentModel}@${currentProviderName}`}
-            items={models.map((m) => ({
-              title: `${m.displayName}${
-                m?.provider?.providerName
-                  ? " (" + m?.provider?.providerName + ")"
-                  : ""
-              }`,
-              value: `${m.name}@${m?.provider?.providerName}`,
-            }))}
+            items={(() => {
+              // Group models by provider name
+              const groups: { [key: string]: Array<any> } = {};
+              for (const m of models) {
+                const providerName = m?.provider?.providerName || "Unknown";
+                if (!groups[providerName]) groups[providerName] = [];
+                groups[providerName].push(m);
+              }
+
+              // Create grouped items with headings for providers
+              const groupedItems: Array<any> = [];
+              for (const provider in groups) {
+                groupedItems.push({
+                  title: provider,
+                  value: `__header__${provider}`,
+                  header: true,
+                  disabled: false,
+                });
+                for (const m of groups[provider]) {
+                  const displayName =
+                    typeof m.displayName === "string" && m.displayName.trim().length > 0
+                      ? m.displayName
+                      : m.apiName;
+                  groupedItems.push({
+                    title: displayName,
+                    value: `${m.apiName}@${provider}`,
+                    header: false,
+                    disabled: false,
+                  });
+                }
+              }
+              return groupedItems;
+            })()}
             onClose={() => setShowModelSelector(false)}
             onSelection={(s) => {
               if (s.length === 0) return;
+              // Ignore header selections
+              if (s[0].startsWith("__header__")) return;
               const [model, providerName] = getModelProvider(s[0]);
               chatStore.updateTargetSession(session, (session) => {
                 session.mask.modelConfig.model = model as ModelType;
@@ -702,9 +730,7 @@ export function ChatActions(props: {
               });
               if (providerName == "ByteDance") {
                 const selectedModel = models.find(
-                  (m) =>
-                    m.name == model &&
-                    m?.provider?.providerName == providerName,
+                  (m) => m.apiName == model && m?.provider?.providerName == providerName,
                 );
                 showToast(selectedModel?.displayName ?? "");
               } else {
@@ -1515,7 +1541,8 @@ function _Chat() {
       if (!isVisionModel(currentModel)) {
         return;
       }
-      const items = (event.clipboardData || window.clipboardData).items;
+      const clipboard = event.clipboardData ?? (window as any).clipboardData;
+      const items = clipboard?.items ?? [];
       for (const item of items) {
         if (item.kind === "file" && item.type.startsWith("image/")) {
           event.preventDefault();
@@ -1868,7 +1895,19 @@ function _Chat() {
                             </div>
                             {!isUser && (
                               <div className={styles["chat-model-name"]}>
-                                {message.model}
+                                {(() => {
+                                    const apiName = message.model || session.mask.modelConfig.model;
+                                    const mapped = MODEL_DISPLAY_NAMES[apiName];
+                                  let displayName = "";
+                                    if (typeof mapped === "string") {
+                                    displayName = mapped.trim();
+                                  }
+                                  if (!displayName) {
+                                    // fallback to apiName
+                                    displayName = getModelDisplayName(apiName) || apiName;
+                                  }
+                                  return displayName;
+                                  })()}
                               </div>
                             )}
 

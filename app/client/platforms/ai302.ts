@@ -273,7 +273,7 @@ export class Ai302Api implements LLMApi {
 
     let seq = 1000; //同 Constant.ts 中的排序保持一致
     return chatModels.map((m) => ({
-      name: m.id,
+      apiName: m.id,
       available: true,
       sorted: seq++,
       provider: {

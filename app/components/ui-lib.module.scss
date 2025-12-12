@@ -89,6 +89,11 @@
   border: 0;
 }
 
+.list-item.selector-header-item {
+  cursor: default !important;
+  background-color: transparent !important;
+}
+
 .modal-container {
   box-shadow: var(--card-shadow);
   background-color: var(--white);

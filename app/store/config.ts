@@ -17,7 +17,7 @@ import {
 import { createPersistStore } from "../utils/store";
 import type { Voice } from "rt-client";
 
-export type ModelType = (typeof DEFAULT_MODELS)[number]["name"];
+export type ModelType = (typeof DEFAULT_MODELS)[number]["apiName"];
 export type TTSModelType = (typeof DEFAULT_TTS_MODELS)[number];
 export type TTSVoiceType = (typeof DEFAULT_TTS_VOICES)[number];
 export type TTSEngineType = (typeof DEFAULT_TTS_ENGINES)[number];
@@ -42,7 +42,7 @@ export const DEFAULT_CONFIG = {
   lastUpdate: Date.now(), // timestamp, to merge state
 
   submitKey: SubmitKey.Enter,
-  avatar: "1f603",
+  avatar: "1f464",
   fontSize: 14,
   fontFamily: "",
   theme: Theme.Auto as Theme,
@@ -178,12 +178,14 @@ export const useAppConfig = createPersistStore(
 
       for (const model of oldModels) {
         model.available = false;
-        modelMap[`${model.name}@${model?.provider?.id}`] = model;
+        const key = (model as LLMModel).apiName;
+        modelMap[`${key}@${model?.provider?.id}`] = model;
       }
 
       for (const model of newModels) {
         model.available = true;
-        modelMap[`${model.name}@${model?.provider?.id}`] = model;
+        const key = (model as LLMModel).apiName;
+        modelMap[`${key}@${model?.provider?.id}`] = model;
       }
 
       set(() => ({
@@ -202,8 +204,9 @@ export const useAppConfig = createPersistStore(
       if (!state) return { ...currentState };
       const models = currentState.models.slice();
       state.models.forEach((pModel) => {
+        const pKey = (pModel as LLMModel).apiName;
         const idx = models.findIndex(
-          (v) => v.name === pModel.name && v.provider === pModel.provider,
+          (v) => (v.apiName === pKey && v.provider === pModel.provider),
         );
         if (idx !== -1) models[idx] = pModel;
         else models.push(pModel);

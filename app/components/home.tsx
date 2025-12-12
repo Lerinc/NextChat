@@ -136,16 +136,10 @@ const useHasHydrated = () => {
 
 const loadAsyncGoogleFont = () => {
   const linkEl = document.createElement("link");
-  const proxyFontUrl = "/google-fonts";
-  const remoteFontUrl = "https://fonts.googleapis.com";
-  const googleFontUrl =
-    getClientConfig()?.buildMode === "export" ? remoteFontUrl : proxyFontUrl;
+  // Load the locally stored CSS file for Noto Sans.
+  // Ensure that `public/fonts/noto-sans.css` and the font files
   linkEl.rel = "stylesheet";
-  linkEl.href =
-    googleFontUrl +
-    "/css2?family=" +
-    encodeURIComponent("Noto Sans:wght@300;400;700;900") +
-    "&display=swap";
+  linkEl.href = "/fonts/noto-sans.css";
   document.head.appendChild(linkEl);
 };
 

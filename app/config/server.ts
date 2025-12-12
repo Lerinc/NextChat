@@ -143,8 +143,8 @@ export const getServerSideConfig = () => {
 
   if (disableGPT4) {
     if (customModels) customModels += ",";
-    customModels += DEFAULT_MODELS.filter((m) => isGPT4Model(m.name))
-      .map((m) => "-" + m.name)
+    customModels += DEFAULT_MODELS.filter((m) => isGPT4Model(m.apiName))
+      .map((m) => "-" + m.apiName)
       .join(",");
     if (defaultModel && isGPT4Model(defaultModel)) {
       defaultModel = "";

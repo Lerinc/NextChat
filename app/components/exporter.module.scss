@@ -171,97 +171,116 @@
         }
       }
     }
+    .message-container {
+      padding-bottom: 20px;
 
-    .message {
-      margin-bottom: 20px;
-      display: flex;
-
-      .avatar {
-        margin-right: 10px;
-      }
-
-      .body {
-        border-radius: 10px;
-        padding: 8px 10px;
-        max-width: calc(100% - 104px);
-        box-shadow: var(--card-shadow);
-        border: var(--border-in-light);
-
-        code,
-        pre {
-          overflow: hidden;
-        }
-
-        .message-image {
-          width: 100%;
-          margin-top: 10px;
-        }
-
-        .message-images {
-          display: grid;
-          justify-content: left;
-          grid-gap: 10px;
-          grid-template-columns: repeat(var(--image-count), auto);
-          margin-top: 10px;
-        }
-
-        @media screen and (max-width: 600px) {
-          $image-width: calc(calc(100vw/2)/var(--image-count));
-
-          .message-image-multi {
-            width: $image-width;
-            height: $image-width;
-          }
-
-          .message-image {
-            max-width: calc(100vw/3*2);
-          }
-        }
-
-        @media screen and (min-width: 600px) {
-          $max-image-width: calc(900px/3*2/var(--image-count));
-          $image-width: calc(80vw/3*2/var(--image-count));
-
-          .message-image-multi {
-            width: $image-width;
-            height: $image-width;
-            max-width: $max-image-width;
-            max-height: $max-image-width;
-          }
-
-          .message-image {
-            max-width: calc(100vw/3*2);
-          }
-        }
-
-        .message-image-multi {
-          object-fit: cover;
-        }
-
-        .message-image,
-        .message-image-multi {
-          box-sizing: border-box;
-          border-radius: 10px;
-          border: rgba($color: #888, $alpha: 0.2) 1px solid;
-        }
-      }
-
-      &-assistant {
-        .body {
-          background-color: var(--white);
-        }
-      }
-
-      &-user {
-        flex-direction: row-reverse;
+      .message {
+        display: flex;
 
         .avatar {
-          margin-right: 0;
+          margin-right: 10px;
         }
 
         .body {
-          background-color: var(--second);
-          margin-right: 10px;
+          border-radius: 10px;
+          padding: 8px 10px;
+          max-width: calc(100% - 104px);
+          box-shadow: var(--card-shadow);
+          border: var(--border-in-light);
+
+          code,
+          pre {
+            overflow: hidden;
+          }
+
+          .message-image {
+            width: 100%;
+            margin-top: 10px;
+          }
+
+          .message-images {
+            display: grid;
+            justify-content: left;
+            grid-gap: 10px;
+            grid-template-columns: repeat(var(--image-count), auto);
+            margin-top: 10px;
+          }
+
+          @media screen and (max-width: 600px) {
+            $image-width: calc(calc(100vw/2)/var(--image-count));
+
+            .message-image-multi {
+              width: $image-width;
+              height: $image-width;
+            }
+
+            .message-image {
+              max-width: calc(100vw/3*2);
+            }
+          }
+
+          @media screen and (min-width: 600px) {
+            $max-image-width: calc(900px/3*2/var(--image-count));
+            $image-width: calc(80vw/3*2/var(--image-count));
+
+            .message-image-multi {
+              width: $image-width;
+              height: $image-width;
+              max-width: $max-image-width;
+              max-height: $max-image-width;
+            }
+
+            .message-image {
+              max-width: calc(100vw/3*2);
+            }
+          }
+
+          .message-image-multi {
+            object-fit: cover;
+          }
+
+          .message-image,
+          .message-image-multi {
+            box-sizing: border-box;
+            border-radius: 10px;
+            border: rgba($color: #888, $alpha: 0.2) 1px solid;
+          }
+        }
+
+        &-assistant {
+          .body {
+            background-color: var(--white);
+          }
+        }
+
+        &-user {
+          flex-direction: row-reverse;
+
+          .avatar {
+            margin-right: 0;
+          }
+
+          .body {
+            background-color: var(--second);
+            margin-right: 10px;
+          }
+        }
+      }
+
+      .message-footer {
+        font-size: 12px;
+        opacity: 0.2;
+        white-space: nowrap;
+        transition: all .6s ease;
+        color: var(--black);
+        width: 100%;
+        box-sizing: border-box;
+        padding: 5px 0px 0px 45px;
+        text-align: left;
+
+        &-user {
+          padding: 5px 45px 0px 0px;
+          text-align: right;
         }
       }
     }

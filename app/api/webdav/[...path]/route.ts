@@ -62,7 +62,11 @@ async function handle(
     endpoint += "/";
   }
 
-  const endpointPath = params.path.join("/");
+  const sanitizedPathComponents = params.path
+    .filter(component => component && component !== '.' && component !== '..')
+    .map(component => encodeURIComponent(component));
+
+  const endpointPath = sanitizedPathComponents.join("/");
   const targetPath = `${endpoint}${endpointPath}`;
 
   // only allow MKCOL, GET, PUT

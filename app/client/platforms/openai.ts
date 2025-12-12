@@ -288,13 +288,11 @@ export class ChatGPTApi implements LLMApi {
           defaultModel,
         );
         const model = models.find(
-          (model) =>
-            model.name === modelConfig.model &&
-            model?.provider?.providerName === ServiceProvider.Azure,
+          (model) => model.apiName === modelConfig.model && model?.provider?.providerName === ServiceProvider.Azure,
         );
         chatPath = this.path(
           (isDalle3 ? Azure.ImagePath : Azure.ChatPath)(
-            (model?.displayName ?? model?.name) as string,
+            (model?.displayName ?? model?.apiName) as string,
             useCustomConfig ? useAccessStore.getState().azureApiVersion : "",
           ),
         );
@@ -519,7 +517,7 @@ export class ChatGPTApi implements LLMApi {
     //由于目前 OpenAI 的 disableListModels 默认为 true，所以当前实际不会运行到这场
     let seq = 1000; //同 Constant.ts 中的排序保持一致
     return chatModels.map((m) => ({
-      name: m.id,
+      apiName: m.id,
       available: true,
       sorted: seq++,
       provider: {

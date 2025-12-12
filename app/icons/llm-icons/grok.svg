@@ -1,8 +1,18 @@
-<svg fill="#333" fill-rule="evenodd" height="1em" style="flex:none;line-height:1" viewBox="0 0 30 30"
-     width="1em" xmlns="http://www.w3.org/2000/svg">
-    <title>Grok</title>
-    <rect width="30" height="30" fill="#E7F8FF" rx="6"/>
-    <g transform="translate(3, 3)">
-        <path d="M6.469 8.776L16.512 23h-4.464L2.005 8.776H6.47zm-.004 7.9l2.233 3.164L6.467 23H2l4.465-6.324zM22 2.582V23h-3.659V7.764L22 2.582zM22 1l-9.952 14.095-2.233-3.163L17.533 1H22z"></path>
-    </g>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 12 12">
+  <!-- Generator: Adobe Illustrator 29.8.2, SVG Export Plug-In . SVG Version: 2.1.1 Build 3)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #f2f2f2;
+      }
+
+      .st1 {
+        fill: #333;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <rect class="st0" y="0" width="12" height="12" rx="2.4" ry="2.4"/>
+  <path class="st1" d="M3.79,4.71l4.02,5.69h-1.79L2,4.71h1.79ZM3.79,7.87l.89,1.27-.89,1.26h-1.79l1.79-2.53ZM10,2.23v8.17h-1.46v-6.09l1.46-2.07h0ZM10,1.6l-3.98,5.64-.89-1.27,3.09-4.37h1.79s-.01,0-.01,0Z"/>
 </svg>

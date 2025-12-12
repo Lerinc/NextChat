@@ -591,7 +591,10 @@ export function Settings() {
   const [checkingUpdate, setCheckingUpdate] = useState(false);
   const currentVersion = updateStore.formatVersion(updateStore.version);
   const remoteId = updateStore.formatVersion(updateStore.remoteVersion);
-  const hasNewVersion = semverCompare(currentVersion, remoteId) === -1;
+  const hasNewVersion =
+    typeof remoteId === "string" &&
+    typeof currentVersion === "string" &&
+    semverCompare(currentVersion, remoteId) === -1;
   const updateUrl = getClientConfig()?.isApp ? RELEASE_URL : UPDATE_URL;
 
   function checkUpdate(force = false) {
@@ -689,31 +692,6 @@ export function Settings() {
           accessStore.update(
             (access) => (access.accessCode = e.currentTarget.value),
           );
-        }}
-      />
-    </ListItem>
-  );
-
-  const saasStartComponent = (
-    <ListItem
-      className={styles["subtitle-button"]}
-      title={
-        Locale.Settings.Access.SaasStart.Title +
-        `${Locale.Settings.Access.SaasStart.Label}`
-      }
-      subTitle={Locale.Settings.Access.SaasStart.SubTitle}
-    >
-      <IconButton
-        aria={
-          Locale.Settings.Access.SaasStart.Title +
-          Locale.Settings.Access.SaasStart.ChatNow
-        }
-        icon={<FireIcon />}
-        type={"primary"}
-        text={Locale.Settings.Access.SaasStart.ChatNow}
-        onClick={() => {
-          trackSettingsPageGuideToCPaymentClick();
-          window.location.href = SAAS_CHAT_URL;
         }}
       />
     </ListItem>
@@ -1615,7 +1593,7 @@ export function Settings() {
             >
               {Object.values(Theme).map((v) => (
                 <option value={v} key={v}>
-                  {v}
+                  {(Locale.Chat.InputActions.Theme as any)[v] ?? v}
                 </option>
               ))}
             </Select>
@@ -1816,7 +1794,6 @@ export function Settings() {
         </List>
 
         <List id={SlotID.CustomModel}>
-          {saasStartComponent}
           {accessCodeComponent}
 
           {!accessStore.hideUserApiKey && (

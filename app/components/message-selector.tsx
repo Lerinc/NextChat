@@ -7,9 +7,19 @@ import { MaskAvatar } from "./mask";
 import Locale from "../locales";
 
 import styles from "./message-selector.module.scss";
+import { getModelDisplayName } from "../constant";
 import { getMessageTextContent } from "../utils";
 import clsx from "clsx";
 
+function formatDate(d: any) {
+  if (d === undefined || d === null || String(d).trim() === "") return "";
+  if (typeof d === "string") return d;
+  try {
+    return new Date(d).toLocaleString();
+  } catch {
+    return String(d);
+  }
+}
 function useShiftRange() {
   const [startIndex, setStartIndex] = useState<number>();
   const [endIndex, setEndIndex] = useState<number>();
@@ -219,7 +229,22 @@ export function MessageSelector(props: {
               </div>
               <div className={styles["body"]}>
                 <div className={styles["date"]}>
-                  {new Date(m.date).toLocaleString()}
+                  {(() => {
+                    const inferModel = () => {
+                      const mm = (m as any) || {};
+                      if (mm.model) return mm.model;
+                      for (let j = i + 1; j < messages.length; j++) {
+                        const next = (messages[j] as any) || {};
+                        if (next.model) return next.model;
+                      }
+                      return undefined;
+                    };
+                    const msgModel = inferModel();
+                    const dateStr = formatDate((m as any).date);
+                    const modelStr = msgModel ? getModelDisplayName(msgModel) : "";
+                    const combined = modelStr && dateStr ? `${modelStr} | ${dateStr}` : modelStr || dateStr;
+                    return <>{combined}</>;
+                  })()}
                 </div>
                 <div className={clsx(styles["content"], "one-line")}>
                   {getMessageTextContent(m)}

@@ -480,6 +480,7 @@ export function Selector<T>(props: {
     subTitle?: string;
     value: T;
     disable?: boolean;
+    header?: boolean;
   }>;
   defaultSelectedValue?: T[] | T;
   onSelection?: (selection: T[]) => void;
@@ -512,42 +513,38 @@ export function Selector<T>(props: {
   return (
     <div className={styles["selector"]} onClick={() => props.onClose?.()}>
       <div className={styles["selector-content"]}>
-        <List>
-          {props.items.map((item, i) => {
-            const selected = selectedValues.includes(item.value);
-            return (
-              <ListItem
-                className={clsx(styles["selector-item"], {
-                  [styles["selector-item-disabled"]]: item.disable,
-                })}
-                key={i}
-                title={item.title}
-                subTitle={item.subTitle}
-                icon={<Avatar model={item.value as string} />}
-                onClick={(e) => {
-                  if (item.disable) {
-                    e.stopPropagation();
-                  } else {
-                    handleSelection(e, item.value);
-                  }
-                }}
-              >
-                {selected ? (
-                  <div
-                    style={{
-                      height: 10,
-                      width: 10,
-                      backgroundColor: "var(--primary)",
-                      borderRadius: 10,
-                    }}
-                  ></div>
-                ) : (
-                  <></>
-                )}
-              </ListItem>
-            );
-          })}
-        </List>
+          <List>
+            {props.items.map((item, i) => {
+              const selected = selectedValues.includes(item.value);
+              return (
+                <ListItem
+                  key={String(item.value ?? i)}
+                  className={clsx(styles["selector-item"], item.header && styles["selector-header-item"])}
+                  title={item.title}
+                  subTitle={item.subTitle}
+                  icon={item.header ? undefined : <Avatar model={item.value as string} />}
+                  onClick={(e) => {
+                    if (item.header) {
+                      e.stopPropagation();
+                    } else {
+                      handleSelection(e, item.value);
+                    }
+                  }}
+                >
+                  {selected ? (
+                    <div
+                      style={{
+                        height: 10,
+                        width: 10,
+                        backgroundColor: "var(--primary)",
+                        borderRadius: 10,
+                      }}
+                    ></div>
+                  ) : undefined}
+                </ListItem>
+              );
+            })}
+          </List>
       </div>
     </div>
   );

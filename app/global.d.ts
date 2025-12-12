@@ -39,5 +39,6 @@ declare interface Window {
         options?: Record<string, unknown>,
       ): Promise<Response<T>>;
     };
+  _SW_ENABLED?: boolean;
   };
 }
