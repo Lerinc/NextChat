@@ -76,15 +76,25 @@ export class XAIApi implements LLMApi {
       },
     };
 
+    const isGrok4 = /^grok-(?:[4-9]|[1-9]\d+)/i.test(modelConfig.model ?? "");
+
     const requestPayload: RequestPayload = {
       messages,
       stream: options.config.stream,
       model: modelConfig.model,
       temperature: modelConfig.temperature,
-      presence_penalty: modelConfig.presence_penalty,
-      frequency_penalty: modelConfig.frequency_penalty,
-      top_p: modelConfig.top_p,
+      ...(isGrok4
+        ? {}
+        : {
+            presence_penalty: modelConfig.presence_penalty,
+            frequency_penalty: modelConfig.frequency_penalty,
+            top_p: modelConfig.top_p,
+          }),
     };
+
+    if (isGrok4) {
+      console.log(`[Request] removed presence/frequency penalties for model ${modelConfig.model}`);
+    }
 
     console.log("[Request] xai payload: ", requestPayload);
 

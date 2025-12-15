@@ -62,9 +62,9 @@ export interface RequestPayload {
   stream?: boolean;
   model: string;
   temperature: number;
-  presence_penalty: number;
-  frequency_penalty: number;
-  top_p: number;
+  presence_penalty?: number;
+  frequency_penalty?: number;
+  top_p?: number;
   max_tokens?: number;
   max_completion_tokens?: number;
 }
