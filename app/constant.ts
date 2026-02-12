@@ -554,6 +554,7 @@ const anthropicModels = [
   { apiName: "claude-opus-4-1-20250805", displayName: "Claude Opus 4.1" },
   { apiName: "claude-sonnet-4-5-20250929", displayName: "Claude Sonnet 4.5" },
   { apiName: "claude-haiku-4-5-20251001", displayName: "Claude 4.5 Haiku" },
+  { apiName: "claude-opus-4-6", displayName: "Claude Opus 4.6" },
 ];
 
 const baiduModels = [
