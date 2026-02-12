@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "NextChat",
-    "version": "2.20.2"
+    "version": "2.20.5"
   },
   "tauri": {
     "allowlist": {

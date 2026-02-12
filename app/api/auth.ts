@@ -14,6 +14,63 @@ function getIP(req: NextRequest) {
   return ip;
 }
 
+function anonymizeIP(ip?: string | null) {
+  if (!ip) return undefined;
+  const value = ip.trim();
+  if (!value) return undefined;
+  return anonymizeIPv4(value) ?? anonymizeIPv6(value);
+}
+
+function anonymizeIPv4(ip: string) {
+  const parts = ip.split(".");
+  if (parts.length !== 4 || parts.some(p => !/^\d+$/.test(p))) return undefined;
+  const nums = parts.map(Number);
+  if (nums.some(n => n < 0 || n > 255)) return undefined;
+  return `${nums[0]}.${nums[1]}.XX.XX`;
+}
+
+function anonymizeIPv6(ip: string) {
+  if (!/^[0-9a-fA-F:.]+$/.test(ip)) return undefined;
+  if (ip.includes("::") && ip.indexOf("::") !== ip.lastIndexOf("::")) return undefined;
+
+  const [headRaw, tailRaw] = ip.split("::");
+  const head = headRaw ? headRaw.split(":") : [];
+  const tail = tailRaw !== undefined ? tailRaw.split(":") : [];
+
+  // eingebettete IPv4 am Ende (z.B. ::ffff:192.0.2.1)
+  const last = tail.at(-1);
+  if (last && last.includes(".")) {
+    const ipv4 = parseIPv4(last);
+    if (!ipv4) return undefined;
+    tail.pop();
+    tail.push(
+      ((ipv4[0] << 8) | ipv4[1]).toString(16),
+      ((ipv4[2] << 8) | ipv4[3]).toString(16)
+    );
+  }
+
+  if (!validIPv6Chunks(head) || !validIPv6Chunks(tail)) return undefined;
+
+  const missing = 8 - (head.length + tail.length);
+  if (missing < 0 || (!ip.includes("::") && missing !== 0)) return undefined;
+
+  const full = [...head, ...Array(missing).fill("0"), ...tail];
+  if (full.length !== 8) return undefined;
+
+  return `${full.slice(0, 4).join(":")}:XXXX:XXXX:XXXX:XXXX`;
+}
+
+function parseIPv4(ip: string): number[] | undefined {
+  const parts = ip.split(".");
+  if (parts.length !== 4 || parts.some(p => !/^\d+$/.test(p))) return undefined;
+  const nums = parts.map(Number);
+  return nums.some(n => n < 0 || n > 255) ? undefined : nums;
+}
+
+function validIPv6Chunks(parts: string[]) {
+  return parts.every(p => p === "" || /^[0-9a-fA-F]{1,4}$/.test(p));
+}
+
 function parseApiKey(bearToken: string) {
   const token = bearToken.trim().replaceAll("Bearer ", "").trim();
   const isApiKey = !token.startsWith(ACCESS_CODE_PREFIX);
@@ -33,24 +90,39 @@ export function auth(req: NextRequest, modelProvider: ModelProvider) {
   const hashedCode = md5.hash(accessCode ?? "").trim();
 
   const serverConfig = getServerSideConfig();
-  console.log("[Auth] allowed hashed codes: ", [...serverConfig.codes]);
-  console.log("[Auth] got access code:", accessCode);
-  console.log("[Auth] hashed access code:", hashedCode);
-  console.log("[User IP] ", getIP(req));
-  console.log("[Time] ", new Date().toLocaleString());
+  const logContext: {
+    timestamp: number;
+    path: string;
+    ipPrefix?: string;
+    authType: "user-api-key" | "access-code" | "none";
+    success?: boolean;
+    errorReason?: string;
+  } = {
+    timestamp: Date.now(),
+    path: req.nextUrl.pathname,
+    ipPrefix: anonymizeIP(getIP(req)),
+    authType: apiKey ? "user-api-key" : accessCode ? "access-code" : "none",
+  };
+
+  const respond = (result: { error: boolean; msg?: string }) => {
+    logContext.success = !result.error;
+    logContext.errorReason = result.error ? result.msg : undefined;
+    console.log("[Auth] request", logContext);
+    return result;
+  };
 
   if (serverConfig.needCode && !serverConfig.codes.has(hashedCode) && !apiKey) {
-    return {
+    return respond({
       error: true,
       msg: !accessCode ? "empty access code" : "wrong access code",
-    };
+    });
   }
 
   if (serverConfig.hideUserApiKey && !!apiKey) {
-    return {
+    return respond({
       error: true,
       msg: "you are not allowed to access with your own api key",
-    };
+    });
   }
 
   // if user does not provide an api key, inject system api key
@@ -123,7 +195,7 @@ export function auth(req: NextRequest, modelProvider: ModelProvider) {
     console.log("[Auth] use user api key");
   }
 
-  return {
+  return respond({
     error: false,
-  };
+  });
 }
