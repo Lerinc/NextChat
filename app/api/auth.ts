@@ -37,7 +37,7 @@ function anonymizeIPv6(ip: string) {
   const head = headRaw ? headRaw.split(":") : [];
   const tail = tailRaw !== undefined ? tailRaw.split(":") : [];
 
-  // eingebettete IPv4 am Ende (z.B. ::ffff:192.0.2.1)
+  // embedded IPv4 at the end (e.g. ::ffff:192.0.2.1)
   const last = tail.at(-1);
   if (last && last.includes(".")) {
     const ipv4 = parseIPv4(last);
@@ -90,24 +90,20 @@ export function auth(req: NextRequest, modelProvider: ModelProvider) {
   const hashedCode = md5.hash(accessCode ?? "").trim();
 
   const serverConfig = getServerSideConfig();
-  const logContext: {
-    timestamp: number;
-    path: string;
-    ipPrefix?: string;
-    authType: "user-api-key" | "access-code" | "none";
-    success?: boolean;
-    errorReason?: string;
-  } = {
-    timestamp: Date.now(),
-    path: req.nextUrl.pathname,
-    ipPrefix: anonymizeIP(getIP(req)),
-    authType: apiKey ? "user-api-key" : accessCode ? "access-code" : "none",
-  };
+
+  const ip = anonymizeIP(getIP(req));
+  const authType: "user-api-key" | "access-code" | "none" =
+    apiKey ? "user-api-key" : accessCode ? "access-code" : "none";
 
   const respond = (result: { error: boolean; msg?: string }) => {
-    logContext.success = !result.error;
-    logContext.errorReason = result.error ? result.msg : undefined;
-    console.log("[Auth] request", logContext);
+    const success = !result.error;
+    const errorReason = result.error ? result.msg : undefined;
+
+    console.log("[Time]", new Date().toLocaleString());
+    console.log("[Auth] type: ", authType);
+    console.log("[Auth] success: ", success);
+    console.log("[Auth] errorReason: ", errorReason ?? "none");
+    console.log("[User IP]", ip);
     return result;
   };
 
@@ -190,6 +186,10 @@ export function auth(req: NextRequest, modelProvider: ModelProvider) {
       req.headers.set("Authorization", `Bearer ${systemApiKey}`);
     } else {
       console.log("[Auth] admin did not provide an api key");
+      return respond({
+        error: true,
+        msg: "admin did not provide an api key",
+      });
     }
   } else {
     console.log("[Auth] use user api key");

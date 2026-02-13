@@ -113,6 +113,15 @@ const ACCESS_CODES = (function getAccessCodes(): Set<string> {
   }
 })();
 
+function maskApiKey(key?: string, first = 2, last = 3) {
+  if (!key) return "";
+  // If the key is too short to reveal both ends, return a generic mask
+  if (key.length <= first + last) {
+    return "...";
+  }
+  return `${key.slice(0, first)}...${key.slice(-last)}`;
+}
+
 function getApiKey(keys?: string) {
   const apiKeyEnvVar = keys ?? "";
   const apiKeys = apiKeyEnvVar.split(",").map((v) => v.trim());
@@ -122,7 +131,7 @@ function getApiKey(keys?: string) {
     console.log(
       `[Server Config] using ${randomIndex + 1} of ${
         apiKeys.length
-      } api key - ${apiKey}`,
+      } api key: ${maskApiKey(apiKey)}`,
     );
   }
 
